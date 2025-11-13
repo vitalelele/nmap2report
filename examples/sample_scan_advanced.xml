@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE nmaprun>
+<?xml-stylesheet href="file:///usr/share/nmap/nmap.xsl" type="text/xsl"?>
+<!-- Nmap 7.93 scan initiated Thu Nov 13 11:15:00 2025 as: nmap -sV -A -oX sample_scan_advanced.xml 192.168.1.10 192.168.1.20 -->
+<nmaprun scanner="nmap" args="nmap -sV -A -oX sample_scan_advanced.xml 192.168.1.10 192.168.1.20" start="1763028900" startstr="Thu Nov 13 11:15:00 2025" version="7.93" xmloutputversion="1.05">
+  <scaninfo type="syn" protocol="tcp" numservices="1000" services="1-1024"/>
+  <verbose level="0"/>
+  <debugging level="0"/>
+  <host starttime="1763028900" endtime="1763028910">
+    <status state="up" reason="syn-ack" reason_ttl="0"/>
+    <address addr="192.168.1.10" addrtype="ipv4"/>
+    <hostnames>
+    </hostnames>
+    <ports>
+      <extraports state="closed" count="997">
+        <extrareasons reason="reset" count="997"/>
+      </extraports>
+      <port protocol="tcp" portid="22">
+        <state state="open" reason="syn-ack" reason_ttl="0"/>
+        <service name="ssh" product="OpenSSH" version="7.4" extrainfo="protocol 2.0" method="probed" conf="10">
+          <cpe>cpe:/a:openbsd:openssh:7.4</cpe>
+        </service>
+        <script id="vulners" output="&#xa;  cpe:/a:openbsd:openssh:7.4: &#xa;    &#x9;CVE-2018-15919&#x9;5.0&#x9;https://vulners.com/cve/CVE-2018-15919&#xa;    &#x9;CVE-2017-15906&#x9;5.0&#x9;https://vulners.com/cve/CVE-2017-15906">
+          <table key="cpe:/a:openbsd:openssh:7.4">
+            <table>
+              <elem key="cvss">5.0</elem>
+              <elem key="id">CVE-2018-15919</elem>
+              <elem key="is_exploit">false</elem>
+              <elem key="type">cve</elem>
+            </table>
+            <table>
+              <elem key="cvss">5.0</elem>
+              <elem key="id">CVE-2017-15906</elem>
+              <elem key="is_exploit">false</elem>
+              <elem key="type">cve</elem>
+            </table>
+          </table>
+        </script>
+      </port>
+      <port protocol="tcp" portid="80">
+        <state state="open" reason="syn-ack" reason_ttl="0"/>
+        <service name="http" product="Apache httpd" version="2.4.49" extrainfo="Ubuntu" method="probed" conf="10">
+          <cpe>cpe:/a:apache:http_server:2.4.49</cpe>
+        </service>
+      </port>
+      <port protocol="tcp" portid="443">
+        <state state="open" reason="syn-ack" reason_ttl="0"/>
+        <service name="https" product="Apache httpd" version="2.4.49" extrainfo="Ubuntu (SSL-enabled)" method="probed" conf="10">
+          <cpe>cpe:/a:apache:http_server:2.4.49</cpe>
+        </service>
+      </port>
+    </ports>
+    <times srtt="50000" rttvar="25000" to="100000"/>
+  </host>
+  <host starttime="1763028910" endtime="1763028920">
+    <status state="up" reason="syn-ack" reason_ttl="0"/>
+    <address addr="192.168.1.20" addrtype="ipv4"/>
+    <hostnames>
+    </hostnames>
+    <ports>
+      <extraports state="closed" count="997">
+        <extrareasons reason="reset" count="997"/>
+      </extraports>
+      <port protocol="tcp" portid="21">
+        <state state="open" reason="syn-ack" reason_ttl="0"/>
+        <service name="ftp" product="vsftpd" version="3.0.3" method="probed" conf="10">
+          <cpe>cpe:/a:vsftpd:vsftpd:3.0.3</cpe>
+        </service>
+      </port>
+      <port protocol="tcp" portid="139">
+        <state state="open" reason="syn-ack" reason_ttl="0"/>
+        <service name="netbios-ssn" product="Microsoft Windows netbios-ssn" method="probed" conf="8"/>
+      </port>
+      <port protocol="tcp" portid="445">
+        <state state="open" reason="syn-ack" reason_ttl="0"/>
+        <service name="microsoft-ds" product="Microsoft Windows 7 - 10 microsoft-ds" method="probed" conf="8">
+          <cpe>cpe:/o:microsoft:windows:10::</cpe>
+        </service>
+        <script id="smb-vuln-ms17-010" output="&#xa;   VULNERABLE: Microsoft SMBv1 (MS17-010)&#xa;   State: VULNERABLE">
+          <table>
+            <elem key="id">CVE-2017-0143</elem>
+            <elem key="cvss">10.0</elem>
+            <elem key="state">VULNERABLE</elem>
+          </table>
+        </script>
+      </port>
+    </ports>
+    <times srtt="30000" rttvar="10000" to="100000"/>
+  </host>
+  <runstats>
+    <finished time="1763028920" timestr="Thu Nov 13 11:15:20 2025" elapsed="20.00" summary="Nmap done at Thu Nov 13 11:15:20 2025; 2 IP addresses (2 hosts up) scanned in 20.00 seconds" exit="success"/>
+    <hosts up="2" down="0" total="2"/>
+  </runstats>
+</nmaprun>

@@ -1,0 +1,17 @@
+# Report di scansione Nmap
+
+{% for host in data.hosts -%}
+## Host: {{ host.ip }}{% if host.hostnames %} ({{ host.hostnames | join(', ') }}){% endif %}
+
+{% for port in host.ports -%}
+- **Porta {{ port.port }}/{{ port.protocol }}** – {{ port.service }}{% if port.product %} ({{ port.product }} {{ port.version }}){% endif %}
+    {% if port.vulns and port.vulns | length > 0 -%}
+    {% for vuln in port.vulns -%}
+    - **{{ vuln.cve }}** – CVSS: {{ "%.1f"|format(vuln.cvss) if vuln.cvss is not none else "N/D" }} ({{ vuln.severity or "Sconosciuta" }}){% if vuln.cwe %} – CWE: {{ vuln.cwe }}{% endif %} – **Raccomandazione:** {{ vuln.recommendation or "N/A" }}
+    {% endfor -%}
+    {% else -%}
+    - Nessuna vulnerabilità nota rilevata su questo servizio.
+    {% endif -%}
+{% endfor %}
+
+{% endfor -%}
