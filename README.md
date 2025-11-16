@@ -86,17 +86,17 @@ python -m pentest_report_gen.cli [OPTIONS]
 
 Generate a simple Markdown report from an Nmap XML:
 ```bash
-nmap2report -i examples/sample_scan.xml -o report.md -f md -s semplice
+python -m pentest_report_gen.cli -i examples/sample_scan.xml -o report.md -f md -s semplice
 ```
 
 Generate a corporate-style report and convert to PDF:
 ```bash
-nmap2report -i examples/sample_scan.xml -o report.pdf -f pdf -s corporate
+python -m pentest_report_gen.cli  -i examples/sample_scan.xml -o report.pdf -f pdf -s corporate
 ```
 
 Launch the GUI:
 ```bash
-nmap2report --gui
+python -m pentest_report_gen.gui
 ```
 
 ### GUI Usage
