@@ -46,7 +46,7 @@ nmap2report is a tool that generates security reports (in Markdown or PDF format
 
 You're ready to run nmap2report using the CLI or launch the GUI.
 
-### Running with Docker
+### Running with Docker (doesn't work at the moment)
 
 If you prefer using Docker, build the Docker image and run the tool in a container:
 
