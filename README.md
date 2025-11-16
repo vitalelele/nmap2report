@@ -80,7 +80,6 @@ python -m pentest_report_gen.cli [OPTIONS]
 - `-o, --output TEXT`: Path for the output report file. If not specified, a default name will be used (e.g., if input is scan.xml, output might be scan_report.md or .pdf)
 - `-f, --format [md|pdf]`: Output format: md for Markdown (default) or pdf for PDF
 - `-s, --style [semplice|corporate]`: Report style: semplice (simple) or corporate. Default is semplice
-- `--gui`: Launch the GUI instead of running in CLI mode
 
 **Examples:**
 
@@ -101,7 +100,7 @@ python -m pentest_report_gen.gui
 
 ### GUI Usage
 
-To use the graphical interface, run the tool with the `--gui` option (or launch the `show_gui()` function in Python). A window will appear.
+To use the graphical interface, run the tool with the `pentest_report_gen.gui` option (or launch the `show_gui()` function in Python). A window will appear.
 
 **Using the GUI:**
 - Select the Nmap XML file to import (click "Browse" to choose the file)
