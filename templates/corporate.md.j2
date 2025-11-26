@@ -1,40 +1,87 @@
 # Security Report – Nmap Scan
 
-## Executive Summary
-
-- Total hosts analyzed: {{ data.stats.total if data.stats.total is defined else data.hosts | length }}
-- Active (reachable) hosts: {{ data.stats.up if data.stats.up is defined else data.hosts | length }}
-{% if data.total_vulns and data.total_vulns > 0 -%}
-- Total vulnerabilities identified: {{ data.total_vulns }}
-- Severity distribution:
-  {% for sev, count in data.severity_counts.items() -%}
-  **{{ sev }}**: {{ count }} {% if not loop.last %}|{% endif %}
-  {% endfor -%}
-{% else -%}
-- No known vulnerabilities were identified on the scanned hosts.
+{% if customer or tester or engagement or scope %}
+> **Customer:** {{ customer or "N/A" }}  
+> **Tester:** {{ tester or "N/A" }}  
+> **Engagement:** {{ engagement or "N/A" }}  
+> **Scope:** {{ scope or "N/A" }}
 {% endif %}
 
+## Executive Summary
 
-## Detailed Findings
+- Total hosts analyzed: {{ stats.total if stats.total is defined else hosts | length }}
+- Active hosts: {{ stats.up if stats.up is defined else hosts | length }}
+- Total vulnerabilities identified: {{ total_vulns }}
+- Severity distribution:
+  {% for sev, count in severity_counts.items() -%}
+  **{{ sev }}**: {{ count }} {% if not loop.last %}|{% endif %}
+  {% endfor -%}
 
-{% for host in data.hosts -%}
+### Top Risk Hosts
+{% if top_hosts %}
+{% for h in top_hosts %}
+- **{{ h.ip }}**{% if h.hostnames %} ({{ h.hostnames | join(", ") }}){% endif %} – Max CVSS: {{ "%.1f"|format(h.max_cvss) if h.max_cvss else "N/A" }} ({{ h.risk_level }})
+{% endfor %}
+{% else %}
+- No hosts with computed risk scores.
+{% endif %}
+
+### Top Critical Findings
+{% if top_cve %}
+{% for cve, info in top_cve %}
+- **{{ cve }}** – Severity: {{ info.severity }} – CVSS: {{ info.cvss if info.cvss is not none else "N/A" }}
+{% endfor %}
+{% else %}
+- No critical findings to highlight.
+{% endif %}
+
+---
+
+## Findings by CVE (Grouped View)
+
+{% if findings_by_cve %}
+{% for cve, info in findings_by_cve.items() %}
+### {{ cve }}
+- Severity: **{{ info.severity or "Unknown" }}**  
+- CVSS: **{{ info.cvss if info.cvss is not none else "N/A" }}**  
+{% if info.cwe %}- CWE: {{ info.cwe }}{% endif %}
+{% if info.recommendation %}- Recommendation: {{ info.recommendation }}{% endif %}
+
+**Affected Hosts/Ports:**
+{% for inst in info.instances %}
+- {{ inst.ip }}{% if inst.hostname %} ({{ inst.hostname | join(", ") }}){% endif %} – Port {{ inst.port }}/{{ inst.protocol }} ({{ inst.service }})
+{% endfor %}
+
+{% endfor %}
+{% else %}
+No CVE-based findings available.
+{% endif %}
+
+---
+
+## Detailed Findings (Per Host)
+
+{% for host in hosts %}
 ### Host: {{ host.ip }}{% if host.hostnames %} ({{ host.hostnames | join(', ') }}){% endif %}
+- **Max CVSS:** {{ "%.1f"|format(host.max_cvss) if host.max_cvss else "N/A" }}  
+- **Average CVSS:** {{ "%.1f"|format(host.avg_cvss) if host.avg_cvss else "N/A" }}  
+- **Risk Level:** {{ host.risk_level }}
 
-{% if host.ports and host.ports | length > 0 -%}
-{% for port in host.ports -%}
-**Port {{ port.port }}/{{ port.protocol }}** – {{ port.service }}{% if port.product %} ({{ port.product }} {{ port.version }}){% endif %}  
-{% if port.vulns and port.vulns | length > 0 -%}
-{% for vuln in port.vulns -%}
-- **{{ vuln.cve }}** – CVSS: {{ "%.1f"|format(vuln.cvss) if vuln.cvss is not none else "N/A" }} ({{ vuln.severity or "Unknown" }}){% if vuln.cwe %} – CWE: {{ vuln.cwe }}{% endif %}  
-  **Recommendation:** {{ vuln.recommendation or "N/A" }}
-{% endfor -%}
-{% else -%}
+{% if host.ports %}
+{% for port in host.ports %}
+**Port {{ port.port }}/{{ port.protocol }}** – {{ port.service }}{% if port.product %} ({{ port.product }} {{ port.version }}){% endif %}
+{% if port.vulns %}
+{% for v in port.vulns %}
+- **{{ v.cve }}** – CVSS: {{ v.cvss if v.cvss is not none else "N/A" }} ({{ v.severity or "Unknown" }}){% if v.cwe %} – CWE: {{ v.cwe }}{% endif %}
+    {% if v.recommendation %}**Recommendation:** {{ v.recommendation }}{% endif %}
+{% endfor %}
+{% else %}
 - No known vulnerabilities detected for this service.
-{% endif -%}
+{% endif %}
 
-{% endfor -%}
-{% else -%}
-*(No open ports detected on this host.)*
+{% endfor %}
+{% else %}
+*(No open ports detected.)*
+{% endif %}
 
-{% endif -%}
-{% endfor -%}
+{% endfor %}

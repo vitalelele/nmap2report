@@ -1,13 +1,13 @@
 # Nmap Scan Report
 
-{% for host in data.hosts -%}
+{% for host in hosts -%}
 ## Host: {{ host.ip }}{% if host.hostnames %} ({{ host.hostnames | join(', ') }}){% endif %}
 
 {% for port in host.ports -%}
 - **Port {{ port.port }}/{{ port.protocol }}** – {{ port.service }}{% if port.product %} ({{ port.product }} {{ port.version }}){% endif %}
     {% if port.vulns and port.vulns | length > 0 -%}
     {% for vuln in port.vulns -%}
-    - **{{ vuln.cve }}** – CVSS: {{ "%.1f"|format(vuln.cvss) if vuln.cvss is not none else "N/A" }} ({{ vuln.severity or "Unknown" }}){% if vuln.cwe %} – CWE: {{ vuln.cwe }}{% endif %} – **Recommendation:** {{ vuln.recommendation or "N/A" }}
+    - **{{ vuln.cve }}** – CVSS: {{ "%.1f"|format(vuln.cvss) if vuln.cvss is not none else "N/A" }} ({{ vuln.severity or "Unknown" }}){% if vuln.cwe %} – CWE: {{ vuln.cwe }}{% endif %}{% if vuln.recommendation %} – **Recommendation:** {{ vuln.recommendation }}{% endif %}
     {% endfor -%}
     {% else -%}
     - No known vulnerabilities detected for this service.
