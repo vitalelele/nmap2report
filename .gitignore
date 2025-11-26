@@ -63,3 +63,5 @@ output/
 
 # Do NOT ignore internal JSON mappings or templates
 # /data/ and /templates/ must stay in version control
+
+roadmap_local.txt
