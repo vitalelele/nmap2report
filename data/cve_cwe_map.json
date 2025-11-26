@@ -2,31 +2,31 @@
   "CVE-2002-0651": {
     "CWE": "CWE-119",
     "CVSS": 9.8,
-    "severity": "Critica",
-    "recommendation": "Aggiornare le librerie di sistema (ad es. glibc) all'ultima versione disponibile."
+    "severity": "Critical",
+    "recommendation": "Update the system libraries (e.g., glibc) to the latest available version."
   },
   "CVE-2012-1667": {
     "CWE": "CWE-189",
     "CVSS": 8.5,
-    "severity": "Alta",
-    "recommendation": "Aggiornare BIND all'ultima versione disponibile."
+    "severity": "High",
+    "recommendation": "Update BIND to the latest available version."
   },
   "CVE-2011-4313": {
     "CWE": "CWE-399",
     "CVSS": 5.0,
-    "severity": "Media",
-    "recommendation": "Applicare gli aggiornamenti di sicurezza rilasciati per BIND."
+    "severity": "Medium",
+    "recommendation": "Apply the latest security updates released for BIND."
   },
   "CVE-2010-3615": {
     "CWE": "CWE-284",
     "CVSS": 5.0,
-    "severity": "Media",
-    "recommendation": "Aggiornare BIND all'ultima versione disponibile (correzione delle ACL di query)."
+    "severity": "Medium",
+    "recommendation": "Update BIND to the latest available version (fixing query ACL handling)."
   },
   "CVE-2014-3214": {
     "CWE": "CWE-400",
     "CVSS": 2.5,
-    "severity": "Bassa",
-    "recommendation": "Aggiornare BIND durante la prossima manutenzione programmata."
+    "severity": "Low",
+    "recommendation": "Plan an upgrade of BIND during the next scheduled maintenance window."
   }
 }
