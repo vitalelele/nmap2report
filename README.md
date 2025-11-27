@@ -117,57 +117,78 @@ python -m pentest_report_gen.cli [OPTIONS]
 
 ### Options
 
-* `-i, --input PATH` (repeatable, **required**)
-  Path to one or more Nmap XML files (`-oX` output). You can pass multiple `-i` options and they will be merged into a single report.
+#### Input / Output
+- **-i, --input PATH** *(repeatable, required)*  
+  Path to one or more Nmap XML files (`-oX` output).  
+  You can pass multiple `-i` options and they will be merged into a single report.
 
-* `-o, --output PATH`
-  Path to the output report file. If omitted, a default name is generated, e.g.:
+- **-o, --output PATH**  
+  Path to the output report file.  
+  If omitted, a default name is generated, for example:
+  - `scan_simple_report.md`
+  - `nmap_merged_corporate_report.pdf`
 
-  * `scan_simple_report.md`
-  * `nmap_merged_corporate_report.pdf`
-
-* `-f, --format [md|pdf]`
+- **-f, --format [md|pdf]**  
   Output format:
+  - `md` (default) – Markdown  
+  - `pdf` – PDF (requires Pandoc)
 
-  * `md` (default) – Markdown
-  * `pdf` – PDF (requires Pandoc)
+- **--output-json PATH**  
+  Export normalized findings as JSON for automation or integrations.
 
-* `-s, --style [simple|corporate]`
+- **--output-csv PATH**  
+  Export findings in CSV format (tabular, Excel-friendly).
+
+- **--output-parquet PATH**  
+  Export findings in Parquet format (columnar, suitable for data engineering workflows).
+
+#### Report Style
+- **-s, --style [simple|corporate]**  
   Report style:
+  - `simple` – compact list-style report  
+  - `corporate` – executive summary, Top Findings, grouping by CVE, host risk index
 
-  * `simple` – compact list-style report
-  * `corporate` – executive summary, Top Findings, grouping by CVE, host risk index
+#### Metadata
+- **--customer TEXT**  
+  Customer name to appear in the report header (optional).
 
-* `--customer TEXT`
-  Customer name to appear in the corporate report header (optional).
-
-* `--tester TEXT`
+- **--tester TEXT**  
   Name of the security tester (optional).
 
-* `--engagement TEXT`
+- **--engagement TEXT**  
   Engagement / project identifier (optional).
 
-* `--scope TEXT`
+- **--scope TEXT**  
   Scope description (IP ranges, assets, etc.) (optional).
 
-* `--lang [en|it]` *(reserved for future i18n)*
+#### Language
+- **--lang [en|it]** *(reserved for future i18n)*  
   Currently used only as metadata in the report context.
 
-* `-v, --verbose` (repeatable)
-  Increase verbosity: `-v` = INFO, `-vv` = DEBUG.
+#### Filtering / Analysis
+- **--min-severity [Low|Medium|High|Critical]**  
+  Minimum severity of findings to include.
 
+- **--list-cves**  
+  List all discovered CVEs (after filtering) in a tabular format on stdout.
+
+#### Verbosity
+- **-v, --verbose** *(repeatable)*  
+  Increase verbosity level:  
+  - `-v` = INFO  
+  - `-vv` = DEBUG
 ### Examples
 
-Generate a simple Markdown report from a single XML:
+Generate a simple Markdown report:
 
 ```bash
 python -m pentest_report_gen.cli \
   -i examples/sample_scan.xml \
   -s simple \
   -f md
-```
+````
 
-Generate a corporate PDF report from a single XML:
+Generate a corporate PDF report:
 
 ```bash
 python -m pentest_report_gen.cli \
@@ -176,21 +197,56 @@ python -m pentest_report_gen.cli \
   -f pdf \
   --customer "ACME Corp." \
   --tester "Antonio Vitale" \
-  --engagement "Internal Pentest Q4" \
-  --scope "192.168.1.0/24" \
-  -v
+  --engagement "Internal Pentest" \
+  --scope "192.168.1.0/24"
 ```
 
-Merge multiple XML scans into a single corporate report:
+Merge multiple scans into a single report:
 
 ```bash
 python -m pentest_report_gen.cli \
   -i examples/sample_scan.xml \
   -i examples/sample_scan_advanced.xml \
   -s corporate \
-  -f md \
-  -vv
+  -f md
 ```
+
+Export normalized findings to JSON:
+
+```bash
+python -m pentest_report_gen.cli \
+  -i examples/sample_scan.xml \
+  --output-json examples/findings.json
+```
+
+Export findings to CSV:
+
+```bash
+python -m pentest_report_gen.cli \
+  -i examples/sample_scan.xml \
+  --output-csv examples/findings.csv
+```
+
+Export findings to Parquet:
+
+```bash
+python -m pentest_report_gen.cli \
+  -i examples/sample_scan.xml \
+  --output-parquet examples/findings.parquet
+```
+
+Combine multiple export formats:
+
+```bash
+python -m pentest_report_gen.cli \
+  -i examples/sample_scan.xml \
+  -s corporate \
+  -f md \
+  --output-json examples/data.json \
+  --output-csv examples/data.csv \
+  --output-parquet examples/data.parquet
+```
+
 
 ---
 
