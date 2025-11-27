@@ -42,6 +42,7 @@ logs/
 # In /examples/
 examples/*_report.md
 examples/*_report.pdf
+examples/*.json
 
 # PyInstaller / Executables (if used)
 *.spec
