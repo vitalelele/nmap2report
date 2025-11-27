@@ -115,68 +115,67 @@ The CLI entrypoint is `pentest_report_gen.cli`. From the project root:
 python -m pentest_report_gen.cli [OPTIONS]
 ```
 
-### Options
+## Options
 
-#### Input / Output
-- **-i, --input PATH** *(repeatable, required)*  
-  Path to one or more Nmap XML files (`-oX` output).  
-  You can pass multiple `-i` options and they will be merged into a single report.
+This section outlines all available parameters to configure the analysis and report generation process.
 
-- **-o, --output PATH**  
-  Path to the output report file.  
-  If omitted, a default name is generated, for example:
-  - `scan_simple_report.md`
-  - `nmap_merged_corporate_report.pdf`
+---
 
-- **-f, --format [md|pdf]**  
-  Output format:
-  - `md` (default) – Markdown  
-  - `pdf` – PDF (requires Pandoc)
+### Input / Output
 
-- **--output-json PATH**  
-  Export normalized findings as JSON for automation or integrations.
+| Option | Description | Notes |
+| :--- | :--- | :--- |
+| **-i, --input PATH** (Required, Repeatable) | Specifies the **path** to one or more **Nmap XML (`-oX`)** input files. | You can use the `-i` option multiple times to **merge** results from different scans into a single report. |
+| **-o, --output PATH** | Path where the final report will be saved. | If omitted, a default filename is generated, such as: `scan_simple_report.md` or `nmap_merged_corporate_report.pdf`. |
+| **-f, --format [md\|pdf]** | Selects the output **format**. | Default: `md` (Markdown). The `pdf` (PDF) option requires the **Pandoc** tool. |
+| **--output-json PATH** | Exports the normalized findings in **JSON** format. | Ideal for integration with automation tools or external dashboards. |
+| **--output-csv PATH** | Exports the findings in **CSV** (tabular) format. | Excellent for data analysis and management using spreadsheets (e.g., Excel). |
+| **--output-parquet PATH** | Exports the data in **Parquet** (columnar) format. | Designed for Data Engineering workflows and high-performance Big Data analysis. |
 
-- **--output-csv PATH**  
-  Export findings in CSV format (tabular, Excel-friendly).
+---
 
-- **--output-parquet PATH**  
-  Export findings in Parquet format (columnar, suitable for data engineering workflows).
+### Report Style
 
-#### Report Style
-- **-s, --style [simple|corporate]**  
-  Report style:
-  - `simple` – compact list-style report  
-  - `corporate` – executive summary, Top Findings, grouping by CVE, host risk index
+Select the level of detail and orientation of the generated report.
 
-#### Metadata
-- **--customer TEXT**  
-  Customer name to appear in the report header (optional).
+| Option | Style | Description |
+| :--- | :--- | :--- |
+| **-s, --style [simple\|corporate]** | **`simple`** | Compact report, based on an **essential list** of findings (list-style). |
+| | **`corporate`** | More detailed report, includes an **Executive Summary**, **Top Findings**, grouping by **CVE**, and a **Host Risk Index**. |
 
-- **--tester TEXT**  
-  Name of the security tester (optional).
+---
 
-- **--engagement TEXT**  
-  Engagement / project identifier (optional).
+### Report Metadata
 
-- **--scope TEXT**  
-  Scope description (IP ranges, assets, etc.) (optional).
+These options add contextual information (optional) to the report header.
 
-#### Language
-- **--lang [en|it]** *(reserved for future i18n)*  
-  Currently used only as metadata in the report context.
+* **`--customer TEXT:`** Name of the Customer or Organization for whom the test was executed.
+* **`--tester TEXT:`** Name of the Security Tester or Analyst who generated the report.
+* **`--engagement TEXT:`** Identifier or code for the Project/Engagement.
+* **`--scope TEXT:`** Brief description of the Scope (e.g., IP ranges, critical assets).
 
-#### Filtering / Analysis
-- **--min-severity [Low|Medium|High|Critical]**  
-  Minimum severity of findings to include.
+---
 
-- **--list-cves**  
-  List all discovered CVEs (after filtering) in a tabular format on stdout.
+### Analysis and Filtering
 
-#### Verbosity
-- **-v, --verbose** *(repeatable)*  
-  Increase verbosity level:  
-  - `-v` = INFO  
-  - `-vv` = DEBUG
+Options to customize the analysis of findings before report generation.
+
+* **`--min-severity [Low\|Medium\|High\|Critical]`:** Sets the **minimum severity** of findings to be included in the report.
+* **`--list-cves`:** After filtering, lists all **discovered CVEs** in a tabular format directly to `stdout` (console).
+
+---
+
+### Verbosity and Debug
+
+* **`-v, --verbose`** (Repeatable): Increases the verbosity level.
+    * `-v` = **INFO**
+    * `-vv` = **DEBUG** (maximum detail)
+
+---
+
+### Language
+
+* **`--lang [en\|it]`:** **Reserved for future internationalization (i18n)**. Currently used only as metadata within the report context.
 ### Examples
 
 Generate a simple Markdown report:
