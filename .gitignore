@@ -43,6 +43,8 @@ logs/
 examples/*_report.md
 examples/*_report.pdf
 examples/*.json
+examples/*.csv
+examples/*.parquet
 
 # PyInstaller / Executables (if used)
 *.spec
