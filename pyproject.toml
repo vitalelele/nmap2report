@@ -24,7 +24,6 @@ classifiers = [
   "Topic :: System :: Networking",
 ]
 
-# Core dependencies (always installed)
 dependencies = [
   "click",
   "customtkinter",
@@ -32,12 +31,9 @@ dependencies = [
   "defusedxml",
 ]
 
-# Optional extras (installable with: pip install .[data])
 [project.optional-dependencies]
-data = [
-  "pandas",
-  "pyarrow",
-]
+# Extra 'data' used when you want CSV/Parquet export
+data = ["pandas", "pyarrow"]
 
 [project.scripts]
 nmap2report = "pentest_report_gen.cli:main"
@@ -45,10 +41,11 @@ nmap2report-gui = "pentest_report_gen.gui:main"
 
 [project.urls]
 Homepage = "https://github.com/vitalelele/nmap2report"
-Source = "https://github.com/vitalelele/nmap2report"
+Source   = "https://github.com/vitalelele/nmap2report"
 
 [tool.setuptools]
 packages = ["pentest_report_gen"]
 
 [tool.setuptools.package-data]
-"pentest_report_gen" = ["data/*.json", "../templates/*.j2"]
+# For future packaging: data/templates inside the package.
+"pentest_report_gen" = ["data/*.json", "templates/*.j2"]
