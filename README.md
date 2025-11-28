@@ -36,12 +36,13 @@ The tool can be used from the command line or via a modern graphical interface, 
     - Top critical CVE findings
     - Overall severity distribution.
 
-- **Report generation**
+- **Report generation & exports**
   - Generates well-formatted Markdown reports using Jinja2 templates.
   - Two report styles:
     - **simple** – concise, host/port-centric list.
     - **corporate** – executive summary, Top Findings, grouped CVE view and detailed findings per host.
   - Optional PDF export via Pandoc.
+  - Optional export of normalized findings to **JSON**, **CSV** or **Parquet** for further analysis and integration.
 
 - **(Planned) Docker support**
   - A Dockerfile is included as a starting point, but container support is currently considered **experimental / WIP**.
@@ -66,6 +67,7 @@ nmap2report/
 ├─ templates/
 │  ├─ simple.md.j2            # "simple" report template
 │  └─ corporate.md.j2         # "corporate" report template
+├─ pyproject.toml
 ├─ README.md
 ├─ requirements.txt
 └─ LICENSE
@@ -78,15 +80,24 @@ nmap2report/
 ### Prerequisites
 
 * **Python 3.9+** recommended.
+
 * Python libraries (installed via `requirements.txt`):
 
   * `click`
   * `customtkinter`
   * `Jinja2`
   * `defusedxml`
+
 * For PDF output:
 
   * **Pandoc** must be installed and available on your `PATH`.
+
+* For CSV/Parquet exports (optional but recommended):
+
+  * `pandas`
+  * `pyarrow` (or another Parquet engine)
+
+---
 
 ### Local installation
 
@@ -97,10 +108,20 @@ git clone https://github.com/vitalelele/nmap2report.git
 cd nmap2report
 ```
 
-(Optionally) create and activate a virtual environment, then install dependencies:
+Create and activate a virtual environment (optional but recommended), then install dependencies:
 
 ```bash
 pip install -r requirements.txt
+```
+
+Alternatively, you can install the project in **editable mode** via `pyproject.toml`:
+
+```bash
+# Basic install (CLI + GUI)
+pip install -e .
+
+# Install with data-export extras (CSV/Parquet)
+pip install -e ".[data]"
 ```
 
 You are now ready to use both the CLI and the GUI.
@@ -115,6 +136,12 @@ The CLI entrypoint is `pentest_report_gen.cli`. From the project root:
 python -m pentest_report_gen.cli [OPTIONS]
 ```
 
+If you installed the project with `pip install -e .`, you can also use the console script:
+
+```bash
+nmap2report [OPTIONS]
+```
+
 ## Options
 
 This section outlines all available parameters to configure the analysis and report generation process.
@@ -123,14 +150,14 @@ This section outlines all available parameters to configure the analysis and rep
 
 ### Input / Output
 
-| Option | Description | Notes |
-| :--- | :--- | :--- |
-| **-i, --input PATH** (Required, Repeatable) | Specifies the **path** to one or more **Nmap XML (`-oX`)** input files. | You can use the `-i` option multiple times to **merge** results from different scans into a single report. |
-| **-o, --output PATH** | Path where the final report will be saved. | If omitted, a default filename is generated, such as: `scan_simple_report.md` or `nmap_merged_corporate_report.pdf`. |
-| **-f, --format [md\|pdf]** | Selects the output **format**. | Default: `md` (Markdown). The `pdf` (PDF) option requires the **Pandoc** tool. |
-| **--output-json PATH** | Exports the normalized findings in **JSON** format. | Ideal for integration with automation tools or external dashboards. |
-| **--output-csv PATH** | Exports the findings in **CSV** (tabular) format. | Excellent for data analysis and management using spreadsheets (e.g., Excel). |
-| **--output-parquet PATH** | Exports the data in **Parquet** (columnar) format. | Designed for Data Engineering workflows and high-performance Big Data analysis. |
+| Option                                      | Description                                                             | Notes                                                                                                                |
+| :------------------------------------------ | :---------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------- |
+| **-i, --input PATH** (Required, Repeatable) | Specifies the **path** to one or more **Nmap XML (`-oX`)** input files. | You can use the `-i` option multiple times to **merge** results from different scans into a single report.           |
+| **-o, --output PATH**                       | Path where the final report will be saved.                              | If omitted, a default filename is generated, such as: `scan_simple_report.md` or `nmap_merged_corporate_report.pdf`. |
+| **-f, --format [md|pdf]**                   | Selects the output **format**.                                          | Default: `md` (Markdown). The `pdf` (PDF) option requires the **Pandoc** tool.                                       |
+| **--output-json PATH**                      | Exports the normalized findings in **JSON** format.                     | Ideal for integration with automation tools or external dashboards.                                                  |
+| **--output-csv PATH**                       | Exports the findings in **CSV** (tabular) format.                       | Excellent for data analysis and management using spreadsheets (e.g., Excel).                                         |
+| **--output-parquet PATH**                   | Exports the data in **Parquet** (columnar) format.                      | Designed for Data Engineering workflows and high-performance Big Data analysis.                                      |
 
 ---
 
@@ -138,10 +165,10 @@ This section outlines all available parameters to configure the analysis and rep
 
 Select the level of detail and orientation of the generated report.
 
-| Option | Style | Description |
-| :--- | :--- | :--- |
-| **-s, --style [simple\|corporate]** | **`simple`** | Compact report, based on an **essential list** of findings (list-style). |
-| | **`corporate`** | More detailed report, includes an **Executive Summary**, **Top Findings**, grouping by **CVE**, and a **Host Risk Index**. |
+| Option                             | Style           | Description                                                                                                                |
+| :--------------------------------- | :-------------- | :------------------------------------------------------------------------------------------------------------------------- |
+| **-s, --style [simple|corporate]** | **`simple`**    | Compact report, based on an **essential list** of findings (list-style).                                                   |
+|                                    | **`corporate`** | More detailed report, includes an **Executive Summary**, **Top Findings**, grouping by **CVE**, and a **Host Risk Index**. |
 
 ---
 
@@ -149,10 +176,13 @@ Select the level of detail and orientation of the generated report.
 
 These options add contextual information (optional) to the report header.
 
-* **`--customer TEXT:`** Name of the Customer or Organization for whom the test was executed.
-* **`--tester TEXT:`** Name of the Security Tester or Analyst who generated the report.
-* **`--engagement TEXT:`** Identifier or code for the Project/Engagement.
-* **`--scope TEXT:`** Brief description of the Scope (e.g., IP ranges, critical assets).
+* **`--customer TEXT:`** Customer name to appear in the corporate report header (optional).
+
+* **`--tester TEXT:`** Name of the security tester (optional).
+
+* **`--engagement TEXT:`** Engagement / project identifier (optional).
+
+* **`--scope TEXT:`** Scope description (IP ranges, assets, etc.) (optional).
 
 ---
 
@@ -168,14 +198,18 @@ Options to customize the analysis of findings before report generation.
 ### Verbosity and Debug
 
 * **`-v, --verbose`** (Repeatable): Increases the verbosity level.
-    * `-v` = **INFO**
-    * `-vv` = **DEBUG** (maximum detail)
+
+  * `-v` = **INFO**
+  * `-vv` = **DEBUG** (maximum detail)
 
 ---
 
 ### Language
 
 * **`--lang [en\|it]`:** **Reserved for future internationalization (i18n)**. Currently used only as metadata within the report context.
+
+---
+
 ### Examples
 
 Generate a simple Markdown report:
@@ -185,7 +219,7 @@ python -m pentest_report_gen.cli \
   -i examples/sample_scan.xml \
   -s simple \
   -f md
-````
+```
 
 Generate a corporate PDF report:
 
@@ -246,7 +280,6 @@ python -m pentest_report_gen.cli \
   --output-parquet examples/data.parquet
 ```
 
-
 ---
 
 ## GUI usage
@@ -258,6 +291,15 @@ Launch it from the project root:
 ```bash
 python -m pentest_report_gen.gui
 ```
+
+or, if installed with `pip install -e .`:
+
+```bash
+nmap2report-gui
+```
+
+Use the **Basic** tab for scan selection, style and output format, and the **Advanced** tab to configure minimum severity, JSON export and the CVE popup.
+
 ---
 
 ## CVE mapping file (`cve_cwe_map.json`)
@@ -374,3 +416,4 @@ If you have ideas for improvements (new report styles, better templates, new CVE
 2. Fork the repository and submit a pull request.
 
 Please try to keep code and templates in **English**, and include example XML / reports when adding new parsing features.
+
