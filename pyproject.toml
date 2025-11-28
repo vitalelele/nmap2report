@@ -1,0 +1,52 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "nmap2report"
+version = "0.1.0"
+description = "Generate security reports (Markdown/PDF/CSV/Parquet) from Nmap XML output."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+
+authors = [
+  { name = "Antonio Vitale", email = "support@antoniovitale.it" }
+]
+
+keywords = ["nmap", "security", "pentest", "report", "cve", "cvss"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.9",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Topic :: Security",
+  "Topic :: System :: Networking",
+]
+
+dependencies = [
+  "click",
+  "customtkinter",
+  "jinja2",
+  "defusedxml",
+  # Optional but strongly recommended for Parquet export:
+  "pandas; extra == 'data'",
+  "pyarrow; extra == 'data'",
+]
+
+[project.optional-dependencies]
+data = ["pandas", "pyarrow"]
+
+[project.scripts]
+nmap2report = "pentest_report_gen.cli:main"
+nmap2report-gui = "pentest_report_gen.gui:main"
+
+[project.urls]
+Homepage = "https://github.com/vitalelele/nmap2report"
+Source = "https://github.com/vitalelele/nmap2report"
+
+[tool.setuptools]
+packages = ["pentest_report_gen"]
+
+[tool.setuptools.package-data]
+"pentest_report_gen" = ["data/*.json", "../templates/*.j2"]
