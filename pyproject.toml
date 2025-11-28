@@ -24,18 +24,20 @@ classifiers = [
   "Topic :: System :: Networking",
 ]
 
+# Core dependencies (always installed)
 dependencies = [
   "click",
   "customtkinter",
   "jinja2",
   "defusedxml",
-  # Optional but strongly recommended for Parquet export:
-  "pandas; extra == 'data'",
-  "pyarrow; extra == 'data'",
 ]
 
+# Optional extras (installable with: pip install .[data])
 [project.optional-dependencies]
-data = ["pandas", "pyarrow"]
+data = [
+  "pandas",
+  "pyarrow",
+]
 
 [project.scripts]
 nmap2report = "pentest_report_gen.cli:main"
